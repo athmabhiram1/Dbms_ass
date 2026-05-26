@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CustodyCore API Test</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; padding: 20px; }
+h1 { font-size: 1.6rem; margin-bottom: 20px; color: #f8fafc; }
+h1 small { font-size: .8rem; font-weight: 400; color: #64748b; }
+h2 { font-size: 1.1rem; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #1e293b; color: #38bdf8; }
+.card { background: #1e293b; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+.card-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 16px; }
+.endpoint { background: #0f172a; border-radius: 6px; padding: 12px; margin-bottom: 10px; }
+.endpoint-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.method { font-weight: 700; font-size: .75rem; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: .5px; }
+.get { background: #1e3a5f; color: #60a5fa; }
+.post { background: #1a3a2a; color: #4ade80; }
+.patch { background: #3a2a1a; color: #fbbf24; }
+.path { font-family: 'SF Mono', 'Consolas', monospace; font-size: .82rem; color: #94a3b8; }
+.desc { font-size: .82rem; color: #94a3b8; flex: 1; text-align: right; }
+.endpoint-body { display: none; margin-top: 8px; }
+.endpoint-body.open { display: block; }
+textarea, input[type="text"] { width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 4px; padding: 8px; color: #e2e8f0; font-family: 'SF Mono', 'Consolas', monospace; font-size: .8rem; resize: vertical; margin-bottom: 8px; }
+textarea { min-height: 80px; }
+input[type="text"] { min-height: 36px; }
+.result { background: #0f172a; border: 1px solid #334155; border-radius: 4px; padding: 8px; margin-top: 8px; max-height: 300px; overflow: auto; font-family: 'SF Mono', 'Consolas', monospace; font-size: .78rem; white-space: pre-wrap; word-break: break-all; }
+.result.ok { border-color: #166534; }
+.result.err { border-color: #991b1b; }
+button { background: #334155; border: none; color: #e2e8f0; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: .8rem; }
+button:hover { background: #475569; }
+button:active { background: #1e293b; }
+.btn-toggle { background: #1e293b; font-size: .75rem; padding: 3px 10px; }
+.status-badge { font-size: .7rem; padding: 2px 8px; border-radius: 10px; }
+.status-ok { background: #166534; color: #86efac; }
+.status-err { background: #991b1b; color: #fca5a5; }
+</style>
+</head>
+<body>
+
+<h1>CustodyCore API Test <small>localhost:3000</small></h1>
+
+<div class="card-group">
+
+<!-- ============ HEALTH ============ -->
+<div class="card">
+<h2>System</h2>
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/health</span><span class="desc">Server health check</span>
+<button class="btn-toggle" onclick="toggleBody(this)">Body</button>
+<button onclick="callApi('GET','/api/health',null,this)">▶ Send</button>
+</div>
+<div class="endpoint-body"></div>
+<div class="result">Click Send</div>
+</div>
+</div>
+
+<!-- ============ CASES ============ -->
+<div class="card">
+<h2>Cases</h2>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/cases</span><span class="desc">List all cases</span>
+<button onclick="callApi('GET','/api/cases',null,this)">▶ Send</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/cases/{id}</span><span class="desc">Single case</span>
+<button onclick="callApi('GET','/api/cases/1',null,this)">▶ Send ID=1</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/cases/{id}/evidence</span><span class="desc">Evidence for case</span>
+<button onclick="callApi('GET','/api/cases/1/evidence',null,this)">▶ Send ID=1</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method patch">PATCH</span><span class="path">/api/cases/{id}/close</span><span class="desc">Close a case (triggers disposal)</span>
+<button onclick="callApi('PATCH','/api/cases/1/close',null,this)">▶ Close ID=1</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+</div>
+
+<!-- ============ EVIDENCE ============ -->
+<div class="card">
+<h2>Evidence</h2>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/evidence</span><span class="desc">List all evidence</span>
+<button onclick="callApi('GET','/api/evidence',null,this)">▶ Send</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/evidence/{tag}/audit</span><span class="desc">Audit trail for asset tag</span>
+<button onclick="callApi('GET','/api/evidence/EVI-0001/audit',null,this)">▶ Send TAG=EVI-0001</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method post">POST</span><span class="path">/api/evidence</span><span class="desc">Register new evidence</span>
+<button class="btn-toggle" onclick="toggleBody(this)">Body</button>
+<button onclick="callApi('POST','/api/evidence',null,this)">▶ Send</button>
+</div>
+<div class="endpoint-body">
+<textarea>{
+  "asset_tag": "TEST-" + Date.now(),
+  "description": "Test evidence item",
+  "case_id": 2,
+  "evidence_type_id": 1,
+  "collected_date": "2026-05-26T12:00:00Z",
+  "collected_by": 1
+}</textarea>
+</div>
+<div class="result">Click Send</div>
+</div>
+</div>
+
+<!-- ============ CUSTODY ============ -->
+<div class="card">
+<h2>Custody Transfers</h2>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/custody/transfers</span><span class="desc">List all transfers</span>
+<button onclick="callApi('GET','/api/custody/transfers',null,this)">▶ Send</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method post">POST</span><span class="path">/api/custody/transfer</span><span class="desc">Create transfer (must pass trigger validation)</span>
+<button class="btn-toggle" onclick="toggleBody(this)">Body</button>
+<button onclick="callApi('POST','/api/custody/transfer',null,this)">▶ Send</button>
+</div>
+<div class="endpoint-body">
+<textarea>{
+  "evidence_item_id": 2,
+  "to_personnel_id": 3,
+  "transfer_timestamp": "2026-05-26T12:00:00Z",
+  "transfer_type": "transport",
+  "storage_location_id": 2,
+  "notes": "Test transfer via API"
+}</textarea>
+</div>
+<div class="result">Click Send</div>
+</div>
+</div>
+
+<!-- ============ PERSONNEL ============ -->
+<div class="card">
+<h2>Personnel</h2>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/personnel</span><span class="desc">All personnel</span>
+<button onclick="callApi('GET','/api/personnel',null,this)">▶ Send</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/personnel/officers</span><span class="desc">Active officers</span>
+<button onclick="callApi('GET','/api/personnel/officers',null,this)">▶ Send</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/personnel/prosecutors</span><span class="desc">Active prosecutors</span>
+<button onclick="callApi('GET','/api/personnel/prosecutors',null,this)">▶ Send</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/personnel/defense</span><span class="desc">Active defense attorneys</span>
+<button onclick="callApi('GET','/api/personnel/defense',null,this)">▶ Send</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+</div>
+
+<!-- ============ LAB ============ -->
+<div class="card">
+<h2>Lab Tests</h2>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/lab/tests</span><span class="desc">All lab tests</span>
+<button onclick="callApi('GET','/api/lab/tests',null,this)">▶ Send</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method post">POST</span><span class="path">/api/lab/tests</span><span class="desc">Request lab test</span>
+<button class="btn-toggle" onclick="toggleBody(this)">Body</button>
+<button onclick="callApi('POST','/api/lab/tests',null,this)">▶ Send</button>
+</div>
+<div class="endpoint-body">
+<textarea>{
+  "evidence_item_id": 2,
+  "test_type": "dna",
+  "requested_by": 4
+}</textarea>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method patch">PATCH</span><span class="path">/api/lab/tests/{id}</span><span class="desc">Complete lab test (ID=1)</span>
+<button class="btn-toggle" onclick="toggleBody(this)">Body</button>
+<button onclick="callApi('PATCH','/api/lab/tests/1',null,this)">▶ Send</button>
+</div>
+<div class="endpoint-body">
+<textarea>{
+  "status": "completed",
+  "results_summary": "DNA match confirmed — suspect profile matches crime scene sample.",
+  "lab_technician": 8
+}</textarea>
+</div>
+<div class="result">Click Send</div>
+</div>
+</div>
+
+<!-- ============ DISCLOSURE ============ -->
+<div class="card">
+<h2>Disclosure</h2>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/disclosure/requests</span><span class="desc">All evidence requests</span>
+<button onclick="callApi('GET','/api/disclosure/requests',null,this)">▶ Send</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method post">POST</span><span class="path">/api/disclosure/request</span><span class="desc">Defense evidence request</span>
+<button class="btn-toggle" onclick="toggleBody(this)">Body</button>
+<button onclick="callApi('POST','/api/disclosure/request',null,this)">▶ Send</button>
+</div>
+<div class="endpoint-body">
+<textarea>{
+  "evidence_item_id": 3,
+  "requesting_attorney_id": 6
+}</textarea>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method post">POST</span><span class="path">/api/disclosure/log</span><span class="desc">Log evidence viewing</span>
+<button class="btn-toggle" onclick="toggleBody(this)">Body</button>
+<button onclick="callApi('POST','/api/disclosure/log',null,this)">▶ Send</button>
+</div>
+<div class="endpoint-body">
+<textarea>{
+  "evidence_item_id": 3,
+  "evidence_request_id": 1,
+  "viewing_attorney_id": 6,
+  "supervising_officer_id": 1,
+  "view_type": "physical_inspection"
+}</textarea>
+</div>
+<div class="result">Click Send</div>
+</div>
+</div>
+
+<!-- ============ ANALYTICS ============ -->
+<div class="card">
+<h2>Analytics</h2>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/analytics/backlog</span><span class="desc">Case backlog by prosecutor</span>
+<button onclick="callApi('GET','/api/analytics/backlog',null,this)">▶ Send</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/analytics/lab-turnaround</span><span class="desc">Avg turnaround by test type</span>
+<button onclick="callApi('GET','/api/analytics/lab-turnaround',null,this)">▶ Send</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/analytics/storage</span><span class="desc">Storage utilization</span>
+<button onclick="callApi('GET','/api/analytics/storage',null,this)">▶ Send</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method get">GET</span><span class="path">/api/analytics/prosecutor-workload</span><span class="desc">Prosecutor workload dashboard</span>
+<button onclick="callApi('GET','/api/analytics/prosecutor-workload',null,this)">▶ Send</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+
+<div class="endpoint">
+<div class="endpoint-header">
+<span class="method post">POST</span><span class="path">/api/analytics/ai/summarise/{caseId}</span><span class="desc">Generate AI summary for case</span>
+<button onclick="callApi('POST','/api/analytics/ai/summarise/1',null,this)">▶ Summarise ID=1</button>
+</div>
+<div class="result">Click Send</div>
+</div>
+</div>
+
+</div><!-- .card-group -->
+
+<script>
+function toggleBody(btn) {
+  const body = btn.closest('.endpoint').querySelector('.endpoint-body');
+  body.classList.toggle('open');
+  btn.textContent = body.classList.contains('open') ? 'Hide' : 'Body';
+}
+
+function callApi(method, path, body, btn) {
+  const endpoint = btn.closest('.endpoint');
+  const resultDiv = endpoint.querySelector('.result');
+  const bodyDiv = endpoint.querySelector('.endpoint-body');
+  const textarea = bodyDiv ? bodyDiv.querySelector('textarea') : null;
+
+  resultDiv.textContent = 'Loading...';
+  resultDiv.className = 'result';
+
+  let payload = null;
+  if (method === 'POST' || method === 'PATCH') {
+    if (textarea && textarea.value.trim()) {
+      try {
+        // Evaluate JS expressions like Date.now() in the body text
+        const processed = textarea.value.replace(/Date\.now\(\)/g, 'Date.now()');
+        payload = eval('(' + processed + ')');
+      } catch(e) {
+        resultDiv.textContent = 'ERROR: Invalid JSON body\n' + e.message;
+        resultDiv.className = 'result err';
+        return;
+      }
+    }
+  }
+
+  fetch('http://localhost:3000' + path, {
+    method: method,
+    headers: payload ? { 'Content-Type': 'application/json' } : {},
+    body: payload ? JSON.stringify(payload) : undefined
+  })
+  .then(async r => {
+    const text = await r.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = text; }
+    const statusClass = r.ok ? 'ok' : 'err';
+    resultDiv.className = 'result ' + statusClass;
+    try {
+      resultDiv.textContent = r.status + ' ' + r.statusText + '\n' + JSON.stringify(data, null, 2);
+    } catch {
+      resultDiv.textContent = r.status + ' ' + r.statusText + '\n' + text;
+    }
+  })
+  .catch(err => {
+    resultDiv.className = 'result err';
+    resultDiv.textContent = 'NETWORK ERROR: ' + err.message + '\n\nIs the backend running on port 3000?';
+  });
+}
+</script>
+
+</body>
+</html>

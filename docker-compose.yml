@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:17
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: custodycore
+    volumes:
+      - ./01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./03_data.sql:/docker-entrypoint-initdb.d/03_data.sql
+      - ./04_triggers.sql:/docker-entrypoint-initdb.d/04_triggers.sql
+      - ./05_views.sql:/docker-entrypoint-initdb.d/05_views.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/custodycore
+      PORT: "3000"
+      AI_SERVICE_URL: http://ai-service:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/custodycore
+      AI_PROVIDER: template
+    depends_on:
+      postgres:
+        condition: service_healthy

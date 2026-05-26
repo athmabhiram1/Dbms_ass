@@ -1,0 +1,14 @@
+provider: ollama
+ollama:
+  url: http://localhost:11434/api/generate
+  model: llama3
+claude:
+  url: https://api.anthropic.com/v1/messages
+  model: claude-3-5-sonnet-20241022
+  api_key: ${CLAUDE_API_KEY}
+openai:
+  url: https://api.openai.com/v1/chat/completions
+  model: gpt-4o-mini
+  api_key: ${OPENAI_API_KEY}
+temperature: 0.7
+max_tokens: 500
