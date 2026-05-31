@@ -21,11 +21,11 @@ export default function Modal({
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const maxWidthClass = {
-    sm: "max-w-sm",
-    md: "max-w-md",
-    lg: "max-w-lg",
-    xl: "max-w-2xl",
-  }[size];
+    sm: "w-full max-w-[384px]",
+    md: "w-full max-w-[448px]",
+    lg: "w-full max-w-[512px]",
+    xl: "w-full max-w-[672px]",
+  }[size] || "w-full max-w-[448px]";
 
   // Close on Escape
   useEffect(() => {
@@ -48,7 +48,7 @@ export default function Modal({
       }}
     >
       <div
-        className={`bg-white w-full rounded-xl shadow-2xl ${maxWidthClass} flex flex-col max-h-[90vh]`}
+        className={`bg-white rounded-xl shadow-2xl ${maxWidthClass} flex flex-col max-h-[90vh]`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-100">

@@ -14,7 +14,9 @@ def load_config():
     base = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(base, "config.yaml")
     with open(config_path) as f:
-        return yaml.safe_load(f)
+        content = f.read()
+        expanded = os.path.expandvars(content)
+        return yaml.safe_load(expanded)
 
 
 def get_dsn():

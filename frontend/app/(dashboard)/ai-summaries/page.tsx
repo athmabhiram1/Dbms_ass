@@ -27,7 +27,7 @@ export default function AISummariesPage() {
     if (!caseId.trim()) return;
     setGenerating(true);
     try {
-      const data = await aiApi.generate(Number(caseId), provider);
+      const data = await aiApi.generate(caseId.trim(), provider);
       setSummaries((prev) => [data, ...prev]);
       setSelected(data);
       setCaseId("");
@@ -63,8 +63,8 @@ export default function AISummariesPage() {
             </p>
             <form onSubmit={handleGenerate} className="flex gap-3 flex-wrap">
               <input value={caseId} onChange={(e) => setCaseId(e.target.value)}
-                placeholder="Case ID (e.g. 1)" type="text"
-                className="flex-1 border border-blue-200 bg-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary max-w-[120px]" />
+                placeholder="Case ID or Case Number (e.g. 2026-CR-001)" type="text"
+                className="flex-1 border border-blue-200 bg-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary max-w-[280px]" />
               <select value={provider} onChange={(e) => setProvider(e.target.value)}
                 className="border border-blue-200 bg-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-secondary">
                 <option value="ollama">Ollama (Local)</option>

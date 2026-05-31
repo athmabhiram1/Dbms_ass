@@ -40,7 +40,7 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://postgres:password@postgres:5432/custodycore
-      AI_PROVIDER: template
+      AI_PROVIDER: ${AI_PROVIDER:-template}
     depends_on:
       postgres:
         condition: service_healthy

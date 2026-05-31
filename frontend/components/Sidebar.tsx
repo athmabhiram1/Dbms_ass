@@ -12,6 +12,7 @@ const navItems = [
   { href: "/personnel",    icon: "badge",         label: "Personnel" },
   { href: "/disclosure",   icon: "gavel",         label: "Disclosure" },
   { href: "/ai-summaries", icon: "auto_awesome",  label: "AI Summaries" },
+  { href: "/database",     icon: "schema",        label: "Database" },
   { href: "/settings",     icon: "settings",      label: "Settings" },
 ];
 

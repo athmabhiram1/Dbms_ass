@@ -9,6 +9,20 @@ router.get('/lab-turnaround', ctrl.labTurnaround);
 router.get('/storage', ctrl.storageUtilization);
 router.get('/prosecutor-workload', ctrl.prosecutorWorkload);
 
+router.get('/ai/summaries', async (req, res, next) => {
+  try {
+    const result = await pool.query(`
+      SELECT s.*, c.case_number, c.title AS case_title
+      FROM ai_summaries s
+      JOIN cases c ON s.case_id = c.case_id
+      ORDER BY s.generated_at DESC
+    `);
+    res.json({ success: true, data: result.rows });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post('/ai/summarise/:caseId', async (req, res, next) => {
   try {
     const { caseId } = req.params;

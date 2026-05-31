@@ -10,11 +10,12 @@ const personnelRoutes = require('./src/routes/personnel');
 const labRoutes = require('./src/routes/lab');
 const disclosureRoutes = require('./src/routes/disclosure');
 const analyticsRoutes = require('./src/routes/analytics');
+const databaseRoutes = require('./src/routes/database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173', 'http://localhost:8080'], credentials: true }));
 app.use(express.json());
 
 app.use('/api/cases', casesRoutes);
@@ -24,6 +25,7 @@ app.use('/api/personnel', personnelRoutes);
 app.use('/api/lab', labRoutes);
 app.use('/api/disclosure', disclosureRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/database', databaseRoutes);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', service: 'custodycore-backend' });

@@ -550,14 +550,82 @@ export const disclosureApi = {
 
 // ─── AI Summaries ─────────────────────────────────────────────────────────────
 
+export interface DatabaseColumn {
+  name: string;
+  type: string;
+  nullable: boolean;
+  defaultValue: string | null;
+  constraint: string | null;
+  foreignTable: string | null;
+  foreignColumn: string | null;
+}
+
+export interface DatabaseTable {
+  name: string;
+  rowCount: number;
+  totalSize: string;
+  tableSize: string;
+  indexSize: string;
+  columns: DatabaseColumn[];
+}
+
+export interface DatabaseEnum {
+  name: string;
+  values: string[];
+}
+
+export interface DatabaseTrigger {
+  name: string;
+  table: string;
+  event: string;
+  timing: string;
+  action: string;
+}
+
+export interface DatabaseSchemaResponse {
+  tables: DatabaseTable[];
+  enums: DatabaseEnum[];
+  triggers: DatabaseTrigger[];
+  totalDbSize: string;
+}
+
+export interface StorageGridItem {
+  id: number;
+  asset_tag: string;
+  description: string;
+  current_status: string;
+  collected_date: string;
+}
+
+export interface StorageGridLocation {
+  storage_location_id: number;
+  room: string;
+  locker: string | null;
+  refrigerator: string | null;
+  vault: string | null;
+  climate_notes: string | null;
+  access_level: string;
+  items: StorageGridItem[];
+}
+
 export const aiApi = {
   list: async (): Promise<PaginatedResponse<AISummary>> => {
-    return { data: [], total: 0, page: 1, limit: 20 };
+    const data = await request<any[]>("/api/analytics/ai/summaries");
+    const mapped = data.map((s: any) => ({
+      id: s.summary_id,
+      case_id: s.case_id,
+      summary_text: s.summary_text,
+      model_used: s.model_used,
+      generated_at: s.generated_at,
+      prompt_version: s.prompt_version || "v1",
+      case: s.case_number ? { id: s.case_id, case_number: s.case_number, title: s.case_title } as any : undefined,
+    }));
+    return { data: mapped, total: mapped.length, page: 1, limit: mapped.length };
   },
   get: async (_id: number): Promise<AISummary> => {
     throw new Error("Single AI summary get not implemented");
   },
-  generate: async (case_id: number, provider?: string): Promise<AISummary> => {
+  generate: async (case_id: string | number, provider?: string): Promise<AISummary> => {
     const res = await request<any>(`/api/analytics/ai/summarise/${case_id}`, {
       method: "POST",
       body: JSON.stringify({ provider: provider || "ollama" }),
@@ -570,6 +638,17 @@ export const aiApi = {
       generated_at: res.generated_at,
       prompt_version: res.prompt_version || "v1",
     };
+  },
+};
+
+// ─── Database Diagnostics ──────────────────────────────────────────────────────
+
+export const databaseApi = {
+  getSchema: async (): Promise<DatabaseSchemaResponse> => {
+    return request<DatabaseSchemaResponse>("/api/database/schema");
+  },
+  getStorage: async (): Promise<StorageGridLocation[]> => {
+    return request<StorageGridLocation[]>("/api/database/storage");
   },
 };
 
